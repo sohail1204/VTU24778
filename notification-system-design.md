@@ -53,16 +53,16 @@ I would use MySQL because it is reliable, easy to maintain, and supports indexin
 
 ### Database Schema
 Student Table
-student_id(Primary Key)
-name
-email
+- student_id(Primary Key)
+- name
+- email
 Notification Table
-notification_id(Primary Key)
-student_id(Foreign Key)
-notification_type
-message
-is_read
-created_at
+- notification_id(Primary Key)
+- student_id(Foreign Key)
+- notification_type
+- message
+- is_read
+- created_at
 
 ### Possible Problems as Data Increases
 Slow search performance when notifications become very large.
@@ -142,3 +142,40 @@ Time Complexity: O(n)
 With proper index:
 Indexed search
 Time Complexity: O(log n)
+
+# Stage 4
+### Problem
+Notifications are fetched every time a page loads. This increases database load and slows down the application.
+
+### Solutions
+1. Use Caching
+Frequently accessed notifications can be stored in Redis cache instead of querying the database every time.
+Advantage:
+- Faster response time
+- Reduced database load
+Tradeoff:
+- Additional memory usage
+
+2. Use Pagination
+Fetch only a limited number of notifications at a time.
+Example:GET /notifications?page=1&limit=10
+Advantage:
+- Less data transferred
+- Faster queries
+Tradeoff:
+- Multiple API calls may be needed
+
+3. Real-Time Notifications using WebSocket
+Instead of repeatedly requesting notifications, the server pushes new notifications to users.
+Advantage:
+- Instant updates
+- Fewer API requests
+Tradeoff:
+- More complex implementation
+
+4. Database Indexing
+Create indexes on frequently searched columns.
+Advantage:
+- Faster search performance
+Tradeoff:
+- Extra storage required
