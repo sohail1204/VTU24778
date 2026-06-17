@@ -208,17 +208,27 @@ Benefits:
 ### Pseudocode
 
 function notify_all(student_ids,message)
+
     save_notification_to_db(student_ids,message)
+
     add_to_queue(student_ids,message)
+
 end
 
 Worker Process:
+
 while queue not empty
+
     send_email(student_id,message)
+
     push_to_app(student_id,message)
+
     if failed
+
         retry
+
 end
 
 ### Recommended Solution
+
 Use Message Queues along with worker services to handle large-scale notifications efficiently and reliably.
