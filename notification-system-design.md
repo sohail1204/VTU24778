@@ -53,17 +53,16 @@ I would use MySQL because it is reliable, easy to maintain, and supports indexin
 
 ### Database Schema
 Student Table
-- student_id(Primary Key)
-- name
-- email
-
+student_id(Primary Key)
+name
+email
 Notification Table
-- notification_id(Primary Key)
-- student_id(Foreign Key)
-- notification_type
-- message
-- is_read
-- created_at
+notification_id(Primary Key)
+student_id(Foreign Key)
+notification_type
+message
+is_read
+created_at
 
 ### Possible Problems as Data Increases
 Slow search performance when notifications become very large.
@@ -100,3 +99,46 @@ SELECT COUNT(*)
 FROM notifications
 WHERE student_id=1042
 AND is_read=false;
+
+# Stage 3
+### Is the Query Accurate?
+Yes,the query correctly fetches unread notifications of student 1042.
+SELECT * FROM notifications
+WHERE student_id=1042
+AND is_read=false
+ORDER BY created_at ASC;
+
+### Why is it Slow?
+The notifications table contains millions of records.
+No proper index may exist on student_id and is_read.
+SELECT * fetches all columns even when not required.
+Sorting requires additional processing.
+
+### Improvements
+Create a composite index:
+CREATE INDEX idx_student_read_created
+ON notifications(student_id, is_read,created_at);
+Fetch only required columns:
+SELECT notification_id, message, notification_type, created_at
+FROM notifications
+WHERE student_id=1042
+AND is_read=false
+ORDER BY created_at ASC;
+
+### Should We Add Indexes on Every Column?
+No.Adding indexes on every column increases storage usage and slows down INSERT, UPDATE, and DELETE operations.
+Indexes should only be created on frequently searched columns.
+
+### Query to Find Students Who Received Placement Notifications in the Last 7 Days
+SELECT DISTINCT student_id
+FROM notifications
+WHERE notification_type='Placement'
+AND created_at>=NOW()-INTERVAL 7 DAY;
+
+### Likely Computation Cost
+Without indexes:
+Full table scan
+Time Complexity: O(n)
+With proper index:
+Indexed search
+Time Complexity: O(log n)
