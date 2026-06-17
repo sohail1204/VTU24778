@@ -56,6 +56,7 @@ Student Table
 - student_id(Primary Key)
 - name
 - email
+
 Notification Table
 - notification_id(Primary Key)
 - student_id(Foreign Key)
