@@ -180,3 +180,45 @@ Advantage:
 - Faster search performance
 Tradeoff:
 - Extra storage required
+
+# Stage 5
+### Problems in the Given Implementation
+-Notifications are sent one by one, which is slow for 50,000 students.
+-If email sending fails, some students may not receive notifications.
+-Database save and email sending are tightly coupled.
+-A single failure can affect the whole process.
+
+### What Happens if Email Fails for 200 Students?
+The failed notifications should be retried instead of stopping the entire process.
+
+### Improved Design
+-Save notification details in the database first.
+-Push notification tasks to a message queue.
+-Worker services process emails and app notifications independently.
+-Failed notifications are retried automatically.
+
+### Why Save to DB and Send Email Separately?
+Saving to the database and sending emails should happen separately.
+Benefits:
+- Better reliability
+- Faster processing
+- Easy retry mechanism
+- No data loss
+
+### Pseudocode
+
+function notify_all(student_ids,message)
+    save_notification_to_db(student_ids,message)
+    add_to_queue(student_ids,message)
+end
+
+Worker Process:
+while queue not empty
+    send_email(student_id,message)
+    push_to_app(student_id,message)
+    if failed
+        retry
+end
+
+### Recommended Solution
+Use Message Queues along with worker services to handle large-scale notifications efficiently and reliably.
